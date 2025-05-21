@@ -6,8 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
+const payment_1 = __importDefault(require("./routes/payment"));
 //Middlewares
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.get('/api/v1/', (req, res) => {
+    res.status(200).json({
+        message: "Welcome to the payment API",
+    });
+});
 //Routes
+app.use("/api/v1/", payment_1.default);
 exports.default = app;
