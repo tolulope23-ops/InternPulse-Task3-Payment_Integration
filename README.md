@@ -1,13 +1,13 @@
 # Payment Gateway API
-  This is a RESTful API build with **NodeJS**, **Express** and **Typescript** that allows businesses receive payment using **Paystack**.
+  This is a RESTful API built with **NodeJS**, **Express** and **Typescript** that allows businesses receive payment using **Paystack**.
 
 ## Features
 - Initiate customer payment via paystack.
 - Retrieve transaction details by ID(Payment Refrence).
-- API RESTful endpoints
-- In memorystorage of payment information
-- CI/CD pipeline using GitHub Actions
-- Tested using Jest and Supertest
+- API RESTful endpoints.
+- In memorystorage of payment information.
+- CI/CD pipeline using GitHub Actions.
+- Tested using Jest and Supertest.
 
 ## API Endpoints
 Base URL: `/api/v1/`
@@ -21,7 +21,7 @@ Base URL: `/api/v1/`
 {
   "customer_name": "John Doe",
   "customer_email": "john@example.com",
-  "amount": 5000
+  "amount": 50
 }
 ```
 #### Response Body:
@@ -33,7 +33,7 @@ Base URL: `/api/v1/`
             "id": "93vrh877cy",
             "customer_name": "John Doe",
             "customer_email": "john@example.com",
-            "amount": "5000",
+            "amount": "50",
             "status": "pending"
         }
     ],
@@ -51,7 +51,7 @@ Base URL: `/api/v1/`
         "id": "93vrh877cy",
         "customer_name": "John Doe",
         "customer_email": "john@example.com",
-        "amount": 5000.00,
+        "amount": 50,
         "status": "completed"
     },
     "status": "success",
@@ -84,5 +84,6 @@ tests/
 ```
 ### Environment Variable
 ```env
+PORT=
 PAYSTACK_SECRET_KEY=your_paystack_secret_key
 ```
