@@ -43,6 +43,7 @@ Base URL: `/api/v1/`
 ```
 ### Get Endpoint
 `/api/v1/payments/{id}`
+- id: paymentReference
 
 #### Response Body
 ```json
