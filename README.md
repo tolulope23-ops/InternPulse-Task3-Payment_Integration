@@ -12,7 +12,7 @@
 ## API Endpoints
 Base URL: `/api/v1/`
 
-### Post Endpoint
+### Post Endpoint: 
 `/api/v1/payments`
 
 **Initiate a payment**
