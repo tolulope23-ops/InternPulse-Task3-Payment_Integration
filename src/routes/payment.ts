@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { transaction } from "../controller/payment";
+import { transaction, displayTransaction } from "../controller/payment";
 
 const router = Router();
 
-router.post("/payment", transaction);
+router.post("/payments", transaction);
+router.get("/payments/:id", displayTransaction);
 
 export default router;
