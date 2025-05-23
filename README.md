@@ -62,7 +62,7 @@ Base URL: `/api/v1/`
 ```bash
 npm test
 ```
-### Deplyment
+### Deployment
 Render
 
 ### Project Structure
@@ -82,4 +82,7 @@ tests/
 │   └── payment.test.ts
 
 ```
-
+###Environment Variable
+```env
+PAYSTACK_SECRET_KEY=your_paystack_secret_key
+```
