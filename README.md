@@ -65,3 +65,21 @@ npm test
 ### Deplyment
 Render
 
+### Project Structure
+```arduino
+src/
+├── app.ts
+├── server.ts
+├── controller/
+│   └── payment.ts
+├── routes/
+│   └── payment.ts
+├── config/
+│   └── paystack.ts
+├── utils/
+│   └── memoryDb.ts
+tests/
+│   └── payment.test.ts
+
+```
+
