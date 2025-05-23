@@ -69,9 +69,13 @@ export const displayTransaction = async (req: Request, res: Response) => {
             const formatAmount = parseFloat((paymentAmount / 100).toFixed(2));
             
             checkTransaction.status = paymentStatus;
+            if(paymentStatus === "success"){
+                checkTransaction.status = "completed";
+            };
+
             checkTransaction.amount = Number(formatAmount);
 
-           res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
             payment: {
               id: checkTransaction.id,
               customer_name: checkTransaction.customer_name,
