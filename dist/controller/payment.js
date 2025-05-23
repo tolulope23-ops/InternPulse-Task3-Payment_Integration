@@ -15,6 +15,12 @@ const transaction = async (req, res) => {
             amount: amount * 100,
             metadata: { customer_name }
         });
+        if (!initiatePayment) {
+            res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
+                success: "false",
+                message: "incorrect payment information"
+            });
+        }
         const paymentInfo = initiatePayment.data.data;
         const id = paymentInfo.reference;
         types_1.payment.push({
@@ -26,8 +32,8 @@ const transaction = async (req, res) => {
         });
         res.status(http_status_codes_1.StatusCodes.OK).json({
             status: true,
-            paymentInfo: types_1.payment,
-            message: "Payment processing...",
+            message: "Payment initialised successfully",
+            paymentId: id,
             payment_URL: paymentInfo.authorization_url
         });
     }
@@ -42,19 +48,26 @@ exports.transaction = transaction;
 const displayTransaction = async (req, res) => {
     const { id } = req.params;
     const checkTransaction = types_1.payment.find(paymentID => paymentID.id == id);
+    if (!checkTransaction) {
+        res.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({
+            status: false,
+            message: "payment not found"
+        });
+    }
     try {
         if (checkTransaction) {
             const verify = await paystack_1.default.get(`/transaction/verify/${id}`);
             const paymentStatus = verify.data.data.status;
             const paymentAmount = verify.data.data.amount;
+            const formatAmount = parseFloat((paymentAmount / 100).toFixed(2));
             checkTransaction.status = paymentStatus;
-            checkTransaction.amount = paymentAmount;
+            checkTransaction.amount = Number(formatAmount);
             res.status(http_status_codes_1.StatusCodes.OK).json({
                 payment: {
                     id: checkTransaction.id,
                     customer_name: checkTransaction.customer_name,
                     customer_email: checkTransaction.customer_email,
-                    amount: checkTransaction.amount.toFixed(2),
+                    amount: checkTransaction.amount,
                     status: checkTransaction.status
                 },
                 status: "success",
@@ -72,7 +85,6 @@ const displayTransaction = async (req, res) => {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
             status: false,
             message: "Error retrieving payment",
-            err: error
         });
     }
 };
