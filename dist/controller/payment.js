@@ -61,6 +61,10 @@ const displayTransaction = async (req, res) => {
             const paymentAmount = verify.data.data.amount;
             const formatAmount = parseFloat((paymentAmount / 100).toFixed(2));
             checkTransaction.status = paymentStatus;
+            if (paymentStatus === "success") {
+                checkTransaction.status = "completed";
+            }
+            ;
             checkTransaction.amount = Number(formatAmount);
             res.status(http_status_codes_1.StatusCodes.OK).json({
                 payment: {
