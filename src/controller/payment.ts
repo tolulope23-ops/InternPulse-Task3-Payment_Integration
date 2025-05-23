@@ -7,11 +7,18 @@ export const transaction = async (req: Request, res: Response) => {
     const {customer_name, customer_email, amount} = req.body;
 
     try {
-        const initiatePayment = await paystack.post<paystackPostResponseData>("/transaction/initialize",{
+        const initiatePayment = await paystack.post<paystackPostResponseData>("/transaction/initialize", {
             email: customer_email,
             amount: amount * 100,
             metadata: {customer_name}
         });
+
+        if(!initiatePayment){
+            res.status(StatusCodes.BAD_REQUEST).json({
+                success: "false",
+                message: "incorrect payment information"
+            });
+        }
 
         const paymentInfo = initiatePayment.data.data;
         const id = paymentInfo.reference;
@@ -27,8 +34,8 @@ export const transaction = async (req: Request, res: Response) => {
 
         res.status(StatusCodes.OK).json({
             status: true,
-            paymentInfo: payment,
-            message: "Payment processing...",
+            message: "Payment initialised successfully",
+            paymentId: id,
             payment_URL: paymentInfo.authorization_url
         });
     } 
@@ -46,14 +53,23 @@ export const displayTransaction = async (req: Request, res: Response) => {
     const {id} = req.params;
     const checkTransaction = payment.find(paymentID => paymentID.id == id);
 
+    if (!checkTransaction) {
+         res.status(StatusCodes.NOT_FOUND).json({
+            status: false,
+            message: "payment not found"
+        });
+    }
+
     try {
         if (checkTransaction) {
             const verify = await paystack.get<paystackVerifyResponseData>(`/transaction/verify/${id}`);
             const paymentStatus = verify.data.data.status;
             const paymentAmount = verify.data.data.amount;
 
+            const formatAmount = parseFloat((paymentAmount / 100).toFixed(2));
+            
             checkTransaction.status = paymentStatus;
-            checkTransaction.amount = paymentAmount;
+            checkTransaction.amount = Number(formatAmount);
 
            res.status(StatusCodes.OK).json({
             payment: {
