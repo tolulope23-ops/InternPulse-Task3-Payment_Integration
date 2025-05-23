@@ -82,7 +82,7 @@ tests/
 │   └── payment.test.ts
 
 ```
-###Environment Variable
+### Environment Variable
 ```env
 PAYSTACK_SECRET_KEY=your_paystack_secret_key
 ```
