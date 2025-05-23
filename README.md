@@ -64,7 +64,7 @@ Base URL: `/api/v1/`
 npm test
 ```
 ### Deployment
-  Deployed on Render
+  Deployed on Rende
 
 ### Project Structure
 ```arduino
