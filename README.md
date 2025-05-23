@@ -77,7 +77,7 @@ src/
 ├── config/
 │   └── paystack.ts
 ├── utils/
-│   └── memoryDb.ts
+│   └── types.ts
 tests/
 │   └── payment.test.ts
 
