@@ -28,17 +28,9 @@ Base URL: `/api/v1/`
 ```json
 {
     "status": true,
-    "paymentInfo": [
-        {
-            "id": "93vrh877cy",
-            "customer_name": "John Doe",
-            "customer_email": "john@example.com",
-            "amount": "50",
-            "status": "pending"
-        }
-    ],
-    "message": "Payment processing...",
-    "payment_URL": "https://checkout.paystack.com/bc93x0gu0cs3b2x"
+    "message": "Payment initialised successfully",
+    "paymentId": "dx6q6p036l",
+    "payment_URL": "https://checkout.paystack.com/k818zvbawzsfec4"
 }
 ```
 ### Get Endpoint
@@ -48,10 +40,10 @@ Base URL: `/api/v1/`
 #### Response Body
 ```json
 {
-   "payment": {
-        "id": "93vrh877cy",
+    "payment": {
+        "id": "dx6q6p036l",
         "customer_name": "John Doe",
-        "customer_email": "john@example.com",
+        "customer_email": "john@gmail.com",
         "amount": 50,
         "status": "completed"
     },
