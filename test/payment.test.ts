@@ -75,7 +75,7 @@ describe('Payment API', () => {
       customer_name: 'John Doe',
       customer_email: 'john@example.com',
       amount: 50,
-      status: 'success'
+      status: 'completed'
     });
   });
 
