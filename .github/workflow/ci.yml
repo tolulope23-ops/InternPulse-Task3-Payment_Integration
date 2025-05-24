@@ -1,4 +1,4 @@
-name: Node.js CI/CD
+name: Payment CI/CD
 
 on:
   push:
@@ -34,8 +34,8 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && success()
 
     steps:
       - name: Trigger Render Deploy Hook
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
