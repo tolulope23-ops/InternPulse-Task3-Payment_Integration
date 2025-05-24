@@ -9,6 +9,18 @@
 - CI/CD pipeline using GitHub Actions.
 - Tested using Jest and Supertest.
 
+## Installation
+```yml
+git clone https://github.com/tolulope23-ops/InternPulse-Task3-Payment_Integration
+cd payment-gateway-api (Or any named folder)
+npm install
+```
+## Build and Run Locally
+```bash
+npm run build
+npm start
+```
+
 ## API Endpoints
 Base URL: `/api/v1/`
 
