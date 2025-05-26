@@ -1,12 +1,9 @@
-export interface transactionHistory {
-    id: string;
-    customer_name: string;
-    customer_email: string;
-    amount: number;
-    status: string;
-  }
+import { v4 as uuidv4 } from 'uuid';
+export const paymentId = () =>{
+    const id = uuidv4().substring(0, 12);
+    return id;
+}
 
-export const payment: transactionHistory [] = [];
 
 export interface paystackPostResponseData {
     status: boolean;
