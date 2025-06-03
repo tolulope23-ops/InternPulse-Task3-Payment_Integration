@@ -65,7 +65,7 @@ Base URL: `/api/v1/`
 ```
 ## Testing
 ```bash
-npm test
+npm run test
 ```
 ### Deployment
   Deployed on Render
