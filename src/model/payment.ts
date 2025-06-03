@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface PaymentDetails extends Document{
     id: string,
@@ -7,7 +7,6 @@ export interface PaymentDetails extends Document{
     amount: number,
     currency?: string,
     reference: string,
-    payment_method?: string,
     payment_status: string,
     payment_date: Date
 }
@@ -27,13 +26,11 @@ const paymentSchema = new mongoose.Schema<PaymentDetails> ({
     customer_email: {
         type: String, 
         required: true,
-        unique: true
     },
 
     amount: { type: Number, required: true },
     currency: { type: String},
     reference: {type: String, unique: true},
-    payment_method: {type: String},
     payment_status: {type: String, required: true},
     payment_date: {type: Date, required: true}
 
