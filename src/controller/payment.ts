@@ -1,105 +1,89 @@
 import {Request, Response} from "express";
 import { StatusCodes } from "http-status-codes";
-import paystack from "../config/paystack";
-import  {payment, paystackPostResponseData, paystackVerifyResponseData}  from "../utils/types";
+import * as paystackService from "../services/paystack.services";
+import { payment } from "../model/payment";
+import { paymentId } from "../utils/types";
 
-export const transaction = async (req: Request, res: Response) => {
+
+export const initiate_payment = async (req: Request, res: Response) => {
     const {customer_name, customer_email, amount} = req.body;
-
-    try {
-        const initiatePayment = await paystack.post<paystackPostResponseData>("/transaction/initialize", {
-            email: customer_email,
-            amount: amount * 100,
-            metadata: {customer_name}
-        });
-
-        if(!initiatePayment){
-            res.status(StatusCodes.BAD_REQUEST).json({
-                success: "false",
-                message: "incorrect payment information"
-            });
-        }
-
-        const paymentInfo = initiatePayment.data.data;
-        const id = paymentInfo.reference;
-
-        payment.push({
-                id,
-                customer_name,
-                customer_email,
-                amount,
-                status: "pending"
-            });
-            
-
-        res.status(StatusCodes.OK).json({
-            status: true,
-            message: "Payment initialised successfully",
-            paymentId: id,
-            payment_URL: paymentInfo.authorization_url
-        });
-    } 
     
+    try {
+        const payment_data = await paystackService.initiatePayment(customer_email, (amount * 100)); // Paystack requires amount in kobo, hence multiplying by 100.
+        if(!payment_data){
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: false,
+                message: 'Payment not successful'
+            });
+        };
+
+//Saves payment details to database
+        const new_payment = new payment({
+            id: paymentId(),
+            customer_name: customer_name, 
+            customer_email: customer_email, 
+            amount: amount, 
+            reference: payment_data.reference, 
+            payment_status: "pending", 
+            payment_date: new Date()
+        });
+        await new_payment.save();
+
+// Sends response for payment initialization
+        res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'Payment initialised successfully',
+        reference: payment_data.reference,
+        payment_URL: payment_data.authorization_url
+        });
+    }
     catch (error) {
-        res.status(StatusCodes.BAD_REQUEST).json({
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: false,
-            message:"Error processing payment"
+            message:"Error processing payment", error
         });
     }
 };
 
 
-export const displayTransaction = async (req: Request, res: Response) => {
-    const {id} = req.params;
-    const checkTransaction = payment.find(paymentID => paymentID.id == id);
-
-    if (!checkTransaction) {
-         res.status(StatusCodes.NOT_FOUND).json({
-            status: false,
-            message: "payment not found"
-        });
-    }
+export const verify_payment = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    let status;
 
     try {
-        if (checkTransaction) {
-            const verify = await paystack.get<paystackVerifyResponseData>(`/transaction/verify/${id}`);
-            const paymentStatus = verify.data.data.status;
-            const paymentAmount = verify.data.data.amount;
+        const checkPayment = await payment.findOne({reference: id});
+        if(!checkPayment){
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: false,
+                message: 'Payment not found'
+            });
+            return;
+        };
 
-            const formatAmount = parseFloat((paymentAmount / 100).toFixed(2));
-            
-            checkTransaction.status = paymentStatus;
-            if(paymentStatus === "success"){
-                checkTransaction.status = "completed";
-            };
+// Verifies the payment using Paystack service
+        const verify = await paystackService.verifyPayment(id);
 
-            checkTransaction.amount = Number(formatAmount);
+// Checks the status of the payment to update the database.
+        if(verify.status === 'abandoned'){
+            status = 'Not Completed';
+        } else {
+            status = verify.status;
+        };
 
-            res.status(StatusCodes.OK).json({
-            payment: {
-              id: checkTransaction.id,
-              customer_name: checkTransaction.customer_name,
-              customer_email: checkTransaction.customer_email,
-              amount: checkTransaction.amount,
-              status: checkTransaction.status
-            },
-            status: "success",
-            message: "Payment details retrieved successfully."
+// Updates the payment status in the database
+        checkPayment.payment_status = status;
+        checkPayment.currency = verify.currency;
+        await checkPayment.save();
+
+        res.status(StatusCodes.OK).json({
+            payment: checkPayment,
+            status: 'success',
+            message:'Payment details retrieved successfully.'
         });
-
-       } else {
-           res.status(StatusCodes.NOT_FOUND).json({
-               status: false,
-               message: "Payment detail not available."
-           });
-       }
-    } 
-
-    catch (error) {
-        res.status(StatusCodes.BAD_REQUEST).json({
+    } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             status: false,
-            message:"Error retrieving payment",
+            message:"Error processing payment", error
         });
     }
-
 };
