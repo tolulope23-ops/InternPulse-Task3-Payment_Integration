@@ -1,9 +1,9 @@
 // Loads environment variables from .env file
 import dotenv from 'dotenv';
 dotenv.config();
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.dbURL; // MongoDB URI from environment variables
+const MONGO_URI = process.env.DB_URL; // MongoDB URI from environment variables
 
 const connectDB = async (): Promise<void> => {
     try {
